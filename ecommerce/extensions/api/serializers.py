@@ -412,10 +412,18 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_discount(self, obj):
         try:
-            discount = obj.discounts.all()[0]
-            return str(discount.amount)
-        except IndexError:
-            return '0'
+            discount = obj.discounts.first()
+            if discount:
+                return {
+                    'offer_type': discount.offer.offer_type,
+                    'amount': str(discount.amount),
+                }
+        except (AttributeError, TypeError, ValueError):
+            logger.exception(
+                'Failed to retrieve get_discount for order: [%s]',
+                obj
+            )
+        return None
 
     def get_enable_hoist_order_history(self, obj):
         try:
