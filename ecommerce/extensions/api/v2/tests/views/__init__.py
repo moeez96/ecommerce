@@ -72,6 +72,7 @@ class ProductSerializerMixin:
 
         info = Selector().strategy().fetch_for_product(product)
         data.update({
+            'contains_credit_seat': product.contains_credit_seat,
             'is_available_to_buy': info.availability.is_available_to_buy,
             'is_enrollment_code_product': product.is_enrollment_code_product,
             'price': "{0:.2f}".format(info.price.excl_tax) if info.availability.is_available_to_buy else None
