@@ -400,6 +400,7 @@ class OrderSerializer(serializers.ModelSerializer):
     date_placed = serializers.DateTimeField(format=ISO_8601_FORMAT)
     discount = serializers.SerializerMethodField()
     lines = LineSerializer(many=True)
+    offer_condition_name = serializers.SerializerMethodField()
     payment_processor = serializers.SerializerMethodField()
     user = UserSerializer()
     vouchers = serializers.SerializerMethodField()
@@ -484,6 +485,19 @@ class OrderSerializer(serializers.ModelSerializer):
         except ValueError:
             return None
 
+    def get_offer_condition_name(self, obj):
+        if obj.basket:
+            try:
+                applied_offers = obj.basket.applied_offers()
+                if len(obj.basket.applied_offers()) != 0:
+                    return list(applied_offers.values())[0].condition.name
+            except (AttributeError, IndexError, ValueError):
+                logger.exception(
+                    'Failed to retrieve offer_condition_name for order [%s]',
+                    obj
+                )
+        return None
+
     class Meta:
         model = Order
         fields = (
@@ -495,6 +509,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'enterprise_customer_info',
             'lines',
             'number',
+            'offer_condition_name',
             'payment_processor',
             'payment_method',
             'status',
