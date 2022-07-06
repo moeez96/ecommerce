@@ -337,7 +337,6 @@ class PartialStockRecordSerializerForUpdate(StockRecordSerializer):
 class ProductSerializer(ProductPaymentInfoMixin, serializers.HyperlinkedModelSerializer):
     """ Serializer for Products. """
     attribute_values = serializers.SerializerMethodField()
-    contains_credit_seat = serializers.SerializerMethodField()
     product_class = serializers.SerializerMethodField()
     is_available_to_buy = serializers.SerializerMethodField()
     is_enrollment_code_product = serializers.SerializerMethodField()
@@ -363,22 +362,11 @@ class ProductSerializer(ProductPaymentInfoMixin, serializers.HyperlinkedModelSer
     def get_is_enrollment_code_product(self, product):
         return product.is_enrollment_code_product
 
-    def get_contains_credit_seat(self, product):
-        try:
-            product.contains_credit_seat = bool(getattr(product.attr, 'credit_provider', None))
-        except (ValueError) as error:
-            logger.exception(
-                'Failed to retrieve contains_credit_seat with error: [%s]',
-                error
-            )
-            return None
-        return product.contains_credit_seat
-
     class Meta:
         model = Product
         fields = (
             'id', 'url', 'structure', 'product_class', 'title', 'price', 'expires', 'attribute_values',
-            'contains_credit_seat', 'is_available_to_buy', 'is_enrollment_code_product', 'stockrecords'
+            'is_available_to_buy', 'is_enrollment_code_product', 'stockrecords'
         )
         extra_kwargs = {
             'url': {'view_name': PRODUCT_DETAIL_VIEW},
