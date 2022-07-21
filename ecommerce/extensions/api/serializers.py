@@ -430,6 +430,7 @@ class OrderSerializer(serializers.ModelSerializer):
                 return {
                     'offer_type': discount.offer.offer_type,
                     'amount': str(discount.amount),
+                    'code': discount.voucher_code,
                 }
         except (AttributeError, TypeError, ValueError):
             logger.exception(
@@ -484,16 +485,17 @@ class OrderSerializer(serializers.ModelSerializer):
             return None
 
     def get_offer_condition_name(self, obj):
-        if obj.basket:
-            try:
-                applied_offers = obj.basket.applied_offers()
-                if len(obj.basket.applied_offers()) != 0:
-                    return list(applied_offers.values())[0].condition.name
-            except (AttributeError, IndexError, ValueError):
-                logger.exception(
-                    'Failed to retrieve offer_condition_name for order [%s]',
-                    obj
-                )
+        if not obj.basket:
+            return None
+        try:
+            applied_offers = obj.basket.applied_offers()
+            if len(obj.basket.applied_offers()) != 0:
+                return list(applied_offers.values())[0].condition.name
+        except (AttributeError, IndexError, ValueError):
+            logger.exception(
+                'Failed to retrieve offer_condition_name for order [%s]',
+                obj
+            )
         return None
 
     class Meta:
