@@ -206,6 +206,9 @@ class OrderListViewTests(AccessTokenMixin, ThrottlingMixin, TestCase):
                 content['results'][0]['enterprise_customer_info']['learner_portal_url']
             )
 
+        # Test for: order_product_ids
+        self.assertIn('order_product_ids', content['results'][0])
+
     def test_with_other_users_orders(self):
         """ The view should only return orders for the authenticated users. """
         other_user = self.create_user()

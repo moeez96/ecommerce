@@ -397,6 +397,7 @@ class OrderSerializer(serializers.ModelSerializer):
     payment_method = serializers.SerializerMethodField()
     enterprise_customer_info = serializers.SerializerMethodField()
     total_before_discounts_incl_tax = serializers.SerializerMethodField()
+    order_product_ids = serializers.SerializerMethodField()
 
     def get_vouchers(self, obj):
         try:
@@ -498,6 +499,16 @@ class OrderSerializer(serializers.ModelSerializer):
             )
         return None
 
+    def get_order_product_ids(self, obj):
+        try:
+            return ','.join(map(str, obj.lines.values_list('product_id', flat=True)))
+        except (AttributeError, ValueError):
+            logger.exception(
+                'Failed to retrieve order_product_ids for order [%s]',
+                obj
+            )
+            return None
+
     class Meta:
         model = Order
         fields = (
@@ -511,6 +522,7 @@ class OrderSerializer(serializers.ModelSerializer):
             'lines',
             'number',
             'offer_condition_name',
+            'order_product_ids',
             'payment_processor',
             'payment_method',
             'status',
