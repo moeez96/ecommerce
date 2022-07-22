@@ -182,12 +182,11 @@ class OrderListViewTests(AccessTokenMixin, ThrottlingMixin, TestCase):
         # Test for: payment_method
         self.assertEqual(payment_method, content['results'][0]['payment_method'])
 
-        # Test for: discount type
+        # Test for: discount
         if has_discount:
-            self.assertEqual('Voucher', content['results'][0]['discount']['offer_type'])
-            self.assertEqual(float(percent_benefit), float(content['results'][0]['discount']['amount']))
+            self.assertEqual(float(percent_benefit), float(content['results'][0]['discount']))
         else:
-            self.assertEqual(None, content['results'][0]['discount'])
+            self.assertEqual('0', content['results'][0]['discount'])
 
         # Test for: total_before_discounts_incl_tax
         self.assertEqual(float(price), float(content['results'][0]['total_before_discounts_incl_tax']))
