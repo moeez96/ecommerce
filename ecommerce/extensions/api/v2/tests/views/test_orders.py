@@ -209,9 +209,6 @@ class OrderListViewTests(AccessTokenMixin, ThrottlingMixin, TestCase):
         # Test for: total_before_discounts_incl_tax
         self.assertEqual(float(price), float(content['results'][0]['total_before_discounts_incl_tax']))
 
-        # Test for: offer condition name
-        self.assertIn('offer_condition_name', content['results'][0])
-
         # Test for: dashboard_url
         self.assertIn('dashboard_url', content['results'][0])
 
